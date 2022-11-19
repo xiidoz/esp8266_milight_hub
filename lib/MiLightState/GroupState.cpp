@@ -12,10 +12,18 @@ static const char* BULB_MODE_NAMES[] = {
   "night"
 };
 
+static const char* COLOR_MODE_NAMES[] = {
+  "color_temp",
+  "white",
+  "rgb",
+  "none"
+};
+
 const BulbId DEFAULT_BULB_ID;
 
 const GroupStateField GroupState::ALL_PHYSICAL_FIELDS[] = {
   GroupStateField::BULB_MODE,
+  // GroupStateField::COLOR_MODE,
   GroupStateField::HUE,
   GroupStateField::KELVIN,
   GroupStateField::MODE,
@@ -195,6 +203,7 @@ bool GroupState::clearField(GroupStateField field) {
       break;
 
     case GroupStateField::BULB_MODE:
+    case GroupStateField::COLOR_MODE:
       clearedAny = isSetBulbMode();
       state.fields._isSetBulbMode = 0;
 
@@ -242,6 +251,8 @@ bool GroupState::isSetField(GroupStateField field) const {
       return isSetKelvin();
     case GroupStateField::BULB_MODE:
       return isSetBulbMode();
+    case GroupStateField::COLOR_MODE:
+      return isSetColorMode();
     default:
       Serial.print(F("WARNING: tried to check if unknown field was set: "));
       Serial.println(static_cast<unsigned int>(field));
@@ -283,6 +294,8 @@ uint16_t GroupState::getFieldValue(GroupStateField field) const {
       return getKelvin();
     case GroupStateField::BULB_MODE:
       return getBulbMode();
+    case GroupStateField::COLOR_MODE:
+      return getColorMode();
     default:
       Serial.print(F("WARNING: tried to fetch value for unknown field: "));
       Serial.println(static_cast<unsigned int>(field));
@@ -342,6 +355,7 @@ void GroupState::setFieldValue(GroupStateField field, uint16_t value) {
       setKelvin(value);
       break;
     case GroupStateField::BULB_MODE:
+    case GroupStateField::COLOR_MODE:
       setBulbMode(static_cast<BulbMode>(value));
       break;
     default:
@@ -575,6 +589,25 @@ bool GroupState::setBulbMode(BulbMode bulbMode) {
   }
 
   return true;
+}
+
+bool GroupState::isSetColorMode() const {
+  return  isSetBulbMode();
+}
+ColorMode GroupState::getColorMode() const {
+  switch (getBulbMode()) {
+    case BULB_MODE_WHITE:
+      if(isSetKelvin()) {
+        return COLOR_MODE_COLOR_TEMP;
+      }
+      return COLOR_MODE_WHITE;
+
+    case BULB_MODE_COLOR:
+      return COLOR_MODE_RGB;
+    
+    default:
+      return COLOR_MODE_NONE;
+  }
 }
 
 bool GroupState::isSetNightMode() const { return state.fields._isSetNightMode; }
@@ -853,6 +886,10 @@ void GroupState::applyField(JsonObject partialState, const BulbId& bulbId, Group
 
       case GroupStateField::BULB_MODE:
         partialState[GroupStateFieldNames::BULB_MODE] = BULB_MODE_NAMES[getBulbMode()];
+        break;
+
+      case GroupStateField::COLOR_MODE:
+        partialState[GroupStateFieldNames::COLOR_MODE] = COLOR_MODE_NAMES[getColorMode()];
         break;
 
       case GroupStateField::COLOR:

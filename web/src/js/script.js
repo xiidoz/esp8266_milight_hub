@@ -384,6 +384,7 @@ var GROUP_STATE_KEYS = [
   "kelvin",
   "color_temp",
   "bulb_mode",
+  "color_mode",
   "computed_color",
   "effect",
   "device_id",

@@ -21,6 +21,13 @@ enum BulbMode {
   BULB_MODE_NIGHT
 };
 
+enum ColorMode {
+  COLOR_MODE_COLOR_TEMP,
+  COLOR_MODE_WHITE,
+  COLOR_MODE_RGB,
+  COLOR_MODE_NONE
+};
+
 enum class IncrementDirection : unsigned {
   INCREASE = 1,
   DECREASE = -1U
@@ -94,6 +101,11 @@ public:
   bool isSetBulbMode() const;
   BulbMode getBulbMode() const;
   bool setBulbMode(BulbMode mode);
+
+  // 3 bits
+  bool isSetColorMode() const;
+  ColorMode getColorMode() const;
+  bool setColorMode(ColorMode mode);
 
   // 1 bit
   bool isSetNightMode() const;

@@ -14,6 +14,7 @@ static const char* STATE_NAMES[] = {
   GroupStateFieldNames::KELVIN,
   GroupStateFieldNames::COLOR_TEMP,
   GroupStateFieldNames::BULB_MODE,
+  GroupStateFieldNames::COLOR_MODE,
   GroupStateFieldNames::COMPUTED_COLOR,
   GroupStateFieldNames::EFFECT,
   GroupStateFieldNames::DEVICE_ID,
